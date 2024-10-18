@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Effective Hours Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Effective Hours Calculator</h2>
+
+    <label for="grossHours">Gross Hours (hours):</label>
+    <input type="number" id="grossHours" step="0.01" placeholder="Enter gross hours" required>
+
+    <label for="effectiveHours">Effective Hours (hours):</label>
+    <input type="number" id="effectiveHours" step="0.01" placeholder="Enter effective hours" required>
+
+    <label for="lastUpdate">Last Update Time (HH:MM):</label>
+    <input type="time" id="lastUpdate" required>
+
+    <button onclick="calculateTimeLeft()">Calculate Time Left</button>
+
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+    function calculateTimeLeft() {
+        const grossHours = parseFloat(document.getElementById('grossHours').value);
+        const effectiveHours = parseFloat(document.getElementById('effectiveHours').value);
+        const lastUpdateTime = document.getElementById('lastUpdate').value;
+        const minRequiredEffectiveHours = 7.5;
+
+        // If no values are provided
+        if (isNaN(grossHours) || isNaN(effectiveHours) || !lastUpdateTime) {
+            document.getElementById('result').innerText = 'Please enter valid values for all fields.';
+            return;
+        }
+
+        // Time remaining to reach 7.5 effective hours
+        const remainingEffectiveHours = minRequiredEffectiveHours - effectiveHours;
+
+        if (remainingEffectiveHours <= 0) {
+            document.getElementById('result').innerText = 'You have already completed your required effective hours!';
+            return;
+        }
+
+        const hours = Math.floor(remainingEffectiveHours);
+        const minutes = Math.floor((remainingEffectiveHours - hours) * 60);
+
+        // Calculate when they can leave based on the last update time
+        const currentTime = new Date();
+        const [updateHour, updateMinute] = lastUpdateTime.split(':').map(Number);
+        const lastUpdateDate = new Date();
+        lastUpdateDate.setHours(updateHour, updateMinute, 0, 0);
+
+        // Add remaining time to last update time
+        const leaveTime = new Date(lastUpdateDate.getTime() + remainingEffectiveHours * 60 * 60 * 1000);
+        const leaveHour = leaveTime.getHours();
+        const leaveMinute = leaveTime.getMinutes();
+
+        const leaveTimeFormatted = leaveHour.toString().padStart(2, '0') + ':' + leaveMinute.toString().padStart(2, '0');
+
+        document.getElementById('result').innerText = `You need ${hours} hours and ${minutes} minutes more to reach 7.5 effective hours. Based on your last update, you can leave at ${leaveTimeFormatted}.`;
+    }
+</script>
+
+</body>
+</html>
